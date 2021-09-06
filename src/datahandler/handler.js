@@ -1,13 +1,16 @@
 'use strict';
 
 const datastore = require('../datastore');
+const database = require('../database');
 const config = require('../config');
-const { markerKey } = require('../constants');
+const { markerKey, databaseTableName } = require('../constants');
 
 const { validate: validateUuid } = require('uuid');
+const moment = require('moment');
 
 const validateTimestamp = (timestamp) => {
-  return (new Date(timestamp)).getTime() > 0;
+  const date = moment.unix(timestamp / 1000);
+  return date.isValid() && date.isBefore();
 }
 
 const parseEvents = (events) => {
@@ -32,19 +35,22 @@ const getMarker = async () => {
   return marker;
 }
 
-// TODO: fix issue
 const normalizeEvents = (events) => {
+  // Remove invalids
   let validEvents = [];
   for (let event of events) {
-    if (validateUuid(event['user-uuid']) && (new Date(event.timestamp)).getTime() > 0) {
+    if (validateUuid(event['user-uuid']) && validateTimestamp(event.timestamp)) {
       validEvents.push(event);
     }
   }
 
+  // Remove duplicates
+  validEvents = validEvents.filter((v,i,a) => a.findIndex( t => (t['user-uuid'] === v['user-uuid'] && t.timestamp === v.timestamp && t.screen && v.screen)) === i);
+
   return validEvents;
 }
 
-// TODO finalize issue
+// TODO add aggregation logic
 const aggregateEvents = (events) => {
   return events;
 }
@@ -76,5 +82,6 @@ module.exports = async () => {
   events = aggregateEvents(events);
 
   // TODO: save into dynamo db
+  await database.save({ tableName: databaseTableName, data: events });
   console.log(events);
 }

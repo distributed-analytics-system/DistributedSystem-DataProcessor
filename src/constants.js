@@ -3,5 +3,6 @@ module.exports = {
     dev: 'development',
     prod: 'production'
   },
-  markerKey: 'next_event_marker_key'
+  markerKey: 'next_event_marker_key',
+  databaseTableName: 'UserScreenTime'
 };
