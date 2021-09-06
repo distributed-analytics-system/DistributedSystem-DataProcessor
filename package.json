@@ -1,0 +1,24 @@
+{
+  "name": "distributedsystem-dataprocessor",
+  "version": "1.0.0",
+  "description": "Data processor lambda function",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vahagsaribekyan/DistributedSystem-DataProcessor.git"
+  },
+  "author": "vsaribekyan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vahagsaribekyan/DistributedSystem-DataProcessor/issues"
+  },
+  "homepage": "https://github.com/vahagsaribekyan/DistributedSystem-DataProcessor#readme",
+  "dependencies": {
+    "aws-sdk": "^2.983.0",
+    "dotenv": "^10.0.0",
+    "envalid": "6.0.1"
+  }
+}
