@@ -4,6 +4,7 @@
   "description": "Data processor lambda function",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,6 +20,7 @@
   "dependencies": {
     "aws-sdk": "^2.983.0",
     "dotenv": "^10.0.0",
-    "envalid": "6.0.1"
+    "envalid": "6.0.1",
+    "uuid": "^8.3.2"
   }
 }
