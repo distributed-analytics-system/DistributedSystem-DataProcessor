@@ -1,5 +1,6 @@
 'use strict';
 
+const { environments } = require('./src/constants');
 const path = require('path');
 
 if (!process.env.NODE_ENV || process.env.NODE_ENV === environments.dev) {
@@ -7,7 +8,6 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === environments.dev) {
 }
 
 const { dataHandler } = require('./src/datahandler');
-const { environments } = require('./src/constants');
 
 exports.handler = async (event) => {
   try {
