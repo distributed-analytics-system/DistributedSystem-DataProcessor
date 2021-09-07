@@ -125,7 +125,7 @@ const handler = async () => {
   events = aggregateEvents(events);
 
   // TODO: save into dynamo db
-  // await database.save({ tableName: databaseTableName, data: events });
+  await database.save({ tableName: databaseTableName, data: events });
   console.log(events);
 }
 

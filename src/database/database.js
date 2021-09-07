@@ -1,48 +1,48 @@
 'use strict';
 
 const AWS = require("aws-sdk");
+const { awsRegion } = require('../config');
+
 AWS.config.update({
-  region: "us-east-2" // TODO: move to constants
+  region: awsRegion
 });
 
 const dynamodb = new AWS.DynamoDB();
 
 const generateItemsRequest = (events) => {
-  return events.map((event) => {
-    return {
+  let response = [];
+  for (let key in events) {
+    response.push({
       PutRequest: {
         Item: {
           'UserUuid': {
-            S: event['user-uuid']
+            S: key
           },
-          'Timestamp': {
-            N: event.timestamp
-          },
-          'Screen': {
-            S: event.screen
+          'Data': {
+            S: JSON.stringify(events[key])
           }
         }
       }
-    }
-  });
+    });
+  }
+
+  return response;
 }
 
 const save = (options) => {
   return new Promise((resolve, reject) => {
-    const params = {
-      RequestItems: {
-        'UserScreenTime': generateItemsRequest(options.data) // TODO: fix table name
-      }
+    let params = {
+      RequestItems: {}
     };
+    params.RequestItems[options.tableName] = generateItemsRequest(options.data);
 
-    console.log(JSON.stringify(params))
     dynamodb.batchWriteItem(params, function(err, data) {
       if (err) {
-          console.error("Unable to add item. Error JSON:", JSON.stringify(err, null, 2));
-          return reject(err);
+        console.error("Unable to add item. Error JSON:", JSON.stringify(err, null, 2));
+        return reject(err);
       } else {
-          console.log("Added item:", JSON.stringify(data, null, 2));
-          return resolve(data);
+        console.log("Added item:", JSON.stringify(data, null, 2));
+        return resolve(data);
       }
     });
   });

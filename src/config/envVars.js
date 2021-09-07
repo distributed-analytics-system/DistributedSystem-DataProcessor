@@ -17,5 +17,9 @@ module.exports = {
   awsS3BucketName: {
     name: 'AWS_S3_BUCKET_NAME',
     validator: str()
+  },
+  awsRegion: {
+    name: 'AWS_REGION',
+    validator: str()
   }
 };
