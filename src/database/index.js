@@ -1,5 +1,6 @@
-const { save } = require('./database');
+const { get, save} = require('./database');
 
 module.exports = {
+  get,
   save
 };
