@@ -4,5 +4,7 @@ module.exports = {
     prod: 'production'
   },
   markerKey: 'next_event_marker_key',
-  databaseTableName: 'UserScreenTime'
+  databaseTableName: 'UserScreenTime',
+  maxItemsCountToSaveIntoDatabase: 25,
+  maxItemsCountToGetFromDatabase: 100
 };

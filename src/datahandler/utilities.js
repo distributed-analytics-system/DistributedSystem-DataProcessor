@@ -1,6 +1,6 @@
 'use strict';
 
-const { markerKey, databaseTableName } = require('../constants');
+const { markerKey, databaseTableName, maxItemsCountToSaveIntoDatabase } = require('../constants');
 const config = require('../config');
 
 const datastore = require('../datastore');
@@ -120,10 +120,43 @@ const mergeEvents = async (events) => {
   return events;
 }
 
+// Workaround for limitation from DynamoDB - max 25 items for batchPutItem
+const saveEventsByChunks = async (events) => {
+  const eventsArray = Object.keys(events).map((key) => {
+    return {
+      'user-uuid': key,
+      ...events[key]
+    }
+  });
+
+  const chunkedEvents = eventsArray.reduce((resultArray, item, index) => { 
+    const chunkIndex = Math.floor(index / maxItemsCountToSaveIntoDatabase);
+
+    if (!resultArray[chunkIndex]) {
+      resultArray[chunkIndex] = [] // start a new chunk
+    }
+
+    resultArray[chunkIndex].push(item)
+
+    return resultArray
+  }, []);
+
+
+  for (let chunk of chunkedEvents) {
+    let eventsToBeSaved = {};
+    for (let event of chunk) {
+      eventsToBeSaved[event['user-uuid']] = _.omit(event, 'user-uuid');
+    }
+
+    await database.save({ tableName: databaseTableName, data: eventsToBeSaved });
+  }
+}
+
 module.exports = {
   parseEvents,
   normalizeEvents,
   aggregateEvents,
   mergeEvents,
-  getMarker
+  getMarker,
+  saveEventsByChunks
 }

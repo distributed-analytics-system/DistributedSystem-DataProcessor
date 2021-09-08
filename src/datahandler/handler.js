@@ -1,10 +1,9 @@
 'use strict';
 
 const datastore = require('../datastore');
-const database = require('../database');
 const config = require('../config');
-const { markerKey, databaseTableName } = require('../constants');
-const { parseEvents, normalizeEvents, aggregateEvents, mergeEvents, getMarker } = require('./utilities');
+const { markerKey } = require('../constants');
+const { saveEventsByChunks, parseEvents, normalizeEvents, aggregateEvents, mergeEvents, getMarker } = require('./utilities');
 
 module.exports = async () => {
   // Read the marker
@@ -36,6 +35,5 @@ module.exports = async () => {
   events = await mergeEvents(events);
 
   // save into database
-  await database.save({ tableName: databaseTableName, data: events });
-  console.log(events);
+  await saveEventsByChunks(events);
 }
