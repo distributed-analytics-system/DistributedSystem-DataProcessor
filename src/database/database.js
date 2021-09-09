@@ -1,6 +1,6 @@
 'use strict';
 
-const { environments } = require('../constants');
+const { environments, databaseTableName } = require('../constants');
 const config = require('../config');
 
 const AWS = require("aws-sdk");
@@ -16,6 +16,54 @@ if (config.nodeEnv === environments.dev) {
 }
 
 const dynamodb = new AWS.DynamoDB(dynamoConfig);
+
+const createTable = (cb) => {
+  const params = {
+    ExclusiveStartTableName: databaseTableName
+  };
+
+  dynamodb.listTables(params, function(err, data) {
+    if (err) {
+      logger.error({ message: err.message });
+      cb(false);
+    } else {
+      let tableAlreadyExists = false;
+      for (let tableName of data.TableNames) {
+        if (tableName === databaseTableName) {
+          bucketAlreadyExists = true;
+          break;
+        }
+      }
+
+      if (!tableAlreadyExists) {
+        const params = {
+          TableName : databaseTableName,
+          KeySchema: [       
+              { AttributeName: 'UserUuid', KeyType: "HASH"}
+          ],
+          AttributeDefinitions: [       
+              { AttributeName: "UserUuid", AttributeType: "S" }
+          ],
+          ProvisionedThroughput: {       
+              ReadCapacityUnits: 10, 
+              WriteCapacityUnits: 10
+          }
+        };
+
+        dynamodb.createTable(params, function(err, data) {
+          if (err) {
+            logger.error({ message: err.message });
+            cb(false);
+          } else {
+            cb(true);
+          }
+        });
+      } else {
+        cb(true);
+      }
+    }
+  });
+}
 
 const generateItemsRequest = (events) => {
   let response = [];
@@ -68,21 +116,29 @@ const save = (options) => {
 
 const get = (options) => {
   return new Promise((resolve, reject) => {
-    let params = {
-      RequestItems: {}
-    };
-    params.RequestItems[options.tableName] = {
-      Keys: generateGetItemsRequest(options.keys)
-    };
+    // first create table if not exists
+    createTable((created) => {
+      if (created) {
+        let params = {
+          RequestItems: {}
+        };
+        params.RequestItems[options.tableName] = {
+          Keys: generateGetItemsRequest(options.keys)
+        };
 
-    dynamodb.batchGetItem(params, function(err, data) {
-      if (err) {
-        console.error("Unable to get item", JSON.stringify(err));
-        return reject(err);
+        dynamodb.batchGetItem(params, function(err, data) {
+          if (err) {
+            console.error("Unable to get item", JSON.stringify(err));
+            return reject(err);
+          } else {
+            return resolve(data.Responses[options.tableName]);
+          }
+        });
       } else {
-        return resolve(data.Responses[options.tableName]);
+        console.error('Could not create table')
+        return reject({ message: 'Failed to create table' });
       }
-    });
+    })
   });
 }
 
