@@ -18,19 +18,15 @@ if (config.nodeEnv === environments.dev) {
 const dynamodb = new AWS.DynamoDB(dynamoConfig);
 
 const createTable = (cb) => {
-  const params = {
-    ExclusiveStartTableName: databaseTableName
-  };
-
-  dynamodb.listTables(params, function(err, data) {
+  dynamodb.listTables(function(err, data) {
     if (err) {
-      logger.error({ message: err.message });
+      console.error({ message: err.message });
       cb(false);
     } else {
       let tableAlreadyExists = false;
       for (let tableName of data.TableNames) {
         if (tableName === databaseTableName) {
-          bucketAlreadyExists = true;
+          tableAlreadyExists = true;
           break;
         }
       }
@@ -52,7 +48,7 @@ const createTable = (cb) => {
 
         dynamodb.createTable(params, function(err, data) {
           if (err) {
-            logger.error({ message: err.message });
+            console.error({ message: err.message });
             cb(false);
           } else {
             cb(true);
