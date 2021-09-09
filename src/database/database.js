@@ -1,5 +1,8 @@
 'use strict';
 
+const { environments } = require('../constants');
+const config = require('../config');
+
 const AWS = require("aws-sdk");
 const { awsRegion } = require('../config');
 
@@ -7,7 +10,12 @@ AWS.config.update({
   region: awsRegion
 });
 
-const dynamodb = new AWS.DynamoDB();
+const dynamoConfig = {};
+if (config.nodeEnv === environments.dev) {
+  dynamoConfig.endpoint = process.env.AWS_ENDPOINT;
+}
+
+const dynamodb = new AWS.DynamoDB(dynamoConfig);
 
 const generateItemsRequest = (events) => {
   let response = [];

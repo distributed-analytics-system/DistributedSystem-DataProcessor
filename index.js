@@ -22,4 +22,8 @@ exports.handler = async (event) => {
   };
 };
 
-exports.handler();
+if (process.env.NODE_ENV === environments.dev) {
+  // Calling the lambda function every 30seconds to simulate auto scheduling on AWS
+  setInterval(exports.handler, 30000);
+}
+
