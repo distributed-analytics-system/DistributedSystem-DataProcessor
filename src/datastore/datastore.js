@@ -39,19 +39,6 @@ const readObject = (options) => {
 
 const read = (options) => {
   return new Promise((resolve, reject) => {
-    /*
-    {
-      Bucket: 'STRING_VALUE', required
-      Delimiter: 'STRING_VALUE',
-      EncodingType: url,
-      ExpectedBucketOwner: 'STRING_VALUE',
-      Marker: 'STRING_VALUE',
-      MaxKeys: 'NUMBER_VALUE',
-      Prefix: 'STRING_VALUE',
-      RequestPayer: requester
-    }
-    */
-
     s3.listObjectsV2({ Bucket: options.bucketName, ContinuationToken: options.token, Prefix: options.prefix }, function(err, data) {
       if(err) {
         return reject(err);
@@ -71,12 +58,3 @@ module.exports = {
   write,
   read
 };
-
-/* delete later TODO
-read({ bucketName: 'distributed-system-analytics', prefix: 'test' }).then((d) => {
-  console.log(d)
-  console.log(d.data.map(dd => dd.Body.toString()));
-}).catch((err) => {
-  console.error(err);
-})
-*/

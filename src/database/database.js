@@ -98,6 +98,7 @@ const save = (options) => {
     };
     params.RequestItems[options.tableName] = generateItemsRequest(options.data);
 
+    console.debug(`Sending batchWriteItem with the following params: ${JSON.stringify(params)}`);
     dynamodb.batchWriteItem(params, function(err, data) {
       if (err) {
         console.error("Unable to add item: ", JSON.stringify(err));
@@ -122,6 +123,7 @@ const get = (options) => {
           Keys: generateGetItemsRequest(options.keys)
         };
 
+        console.debug(`Sending batchGetItem with the following params: ${JSON.stringify(params)}`);
         dynamodb.batchGetItem(params, function(err, data) {
           if (err) {
             console.error("Unable to get item", JSON.stringify(err));
