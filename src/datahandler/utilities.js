@@ -84,7 +84,7 @@ const aggregateEvents = (events) => {
       let lastUsedScreen = events[key][0].screen;
       let firstT = events[key][0].timestamp;
       for (let i = 1; i < events[key].length; ++i) {
-        if(lastUsedScreen !== events[key][i].screen) {
+        if(lastUsedScreen !== events[key][i].screen || (i + 1) >= events[key].length) {
           groupedClicks[lastUsedScreen].timespent += events[key][i].timestamp - firstT;
 
           lastUsedScreen = events[key][i].screen;
