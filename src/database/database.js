@@ -1,6 +1,6 @@
 'use strict';
 
-const { environments, databaseTableName } = require('../constants');
+const { environments, databaseTableName, maxItemsCountToGetFromDatabase } = require('../constants');
 const config = require('../config');
 
 const AWS = require("aws-sdk");
@@ -111,7 +111,7 @@ const save = (options) => {
   });
 };
 
-const get = (options) => {
+const getItems = (options) => {
   return new Promise((resolve, reject) => {
     // first create table if not exists
     createTable((created) => {
@@ -138,6 +138,29 @@ const get = (options) => {
       }
     })
   });
+}
+
+const get = async (options) => {
+  const chunkedKeys = options.keys.reduce((resultArray, item, index) => { 
+    const chunkIndex = Math.floor(index / maxItemsCountToGetFromDatabase);
+
+    if (!resultArray[chunkIndex]) {
+      resultArray[chunkIndex] = [] // start a new chunk
+    }
+
+    resultArray[chunkIndex].push(item)
+
+    return resultArray
+  }, []);
+
+
+  let result = [];
+  for (let chunk of chunkedKeys) {
+    const data = await getItems({ tableName: options.tableName, keys: chunk });
+    result.push(data);
+  }
+
+  return data;
 }
 
 module.exports = {

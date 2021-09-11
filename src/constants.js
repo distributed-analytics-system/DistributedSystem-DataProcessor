@@ -6,5 +6,5 @@ module.exports = {
   markerKey: 'next_event_marker_key',
   databaseTableName: 'UserScreenTime',
   maxItemsCountToSaveIntoDatabase: 25,
-  maxItemsCountToGetFromDatabase: 100
+  maxItemsCountToGetFromDatabase: 25
 };
