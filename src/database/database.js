@@ -160,7 +160,7 @@ const get = async (options) => {
     result.push(data);
   }
 
-  return data;
+  return result;
 }
 
 module.exports = {
