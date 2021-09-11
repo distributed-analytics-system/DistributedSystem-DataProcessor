@@ -157,6 +157,7 @@ const get = async (options) => {
   let result = [];
   for (let chunk of chunkedKeys) {
     const data = await getItems({ tableName: options.tableName, keys: chunk });
+    console.debug(data)
     result.push(data);
   }
 
