@@ -29,5 +29,11 @@ The DataProcessor is a Lambda function. The responsibility of this function is t
     2. Provide list of env variables in 'root/.env-dev' file with following format: envVar=value
     3. npm start
 
+#### Deployment
+##### Production 
+- The service is deployed in AWS as Lambda Function
+##### Local
+- The service is running with Docker and integrated with LocalStack in order to use AWS S3 and DynamoDB
+
 #### Maintainer contact
 - vahagsaribeyan@gmail.com
